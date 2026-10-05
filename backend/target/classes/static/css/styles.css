@@ -1,0 +1,201 @@
+:root {
+    color-scheme: light;
+    --cor-primaria: #2b5fb0;
+    --cor-primaria-escura: #1d4080;
+    --cor-fundo: #f4f6fb;
+    --cor-texto: #1f2430;
+    --cor-borda: #d7dce5;
+    --cor-erro: #c0392b;
+    --cor-sucesso: #1e8449;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+}
+
+h1, h2, h3 {
+    margin-top: 0;
+}
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.auth-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.subtitulo {
+    color: #666;
+    margin-top: -8px;
+}
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0;
+}
+
+.formulario label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.9rem;
+}
+
+input, select, textarea {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--cor-borda);
+    font-size: 0.95rem;
+}
+
+button {
+    background: var(--cor-primaria);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--cor-primaria-escura);
+}
+
+button.secundario {
+    background: #eef1f7;
+    color: var(--cor-texto);
+}
+
+.msg {
+    min-height: 1.2em;
+    font-size: 0.85rem;
+}
+
+.msg.erro {
+    color: var(--cor-erro);
+}
+
+.msg.sucesso {
+    color: var(--cor-sucesso);
+}
+
+.dica {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+/* App layout */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px;
+    background: var(--cor-primaria);
+    color: #fff;
+}
+
+.app-header .usuario-info {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.badge-role {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.app-nav {
+    display: flex;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #fff;
+    border-bottom: 1px solid var(--cor-borda);
+    flex-wrap: wrap;
+}
+
+.app-nav button {
+    background: #eef1f7;
+    color: var(--cor-texto);
+}
+
+.app-nav button.ativo {
+    background: var(--cor-primaria);
+    color: #fff;
+}
+
+.app-main {
+    padding: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.secao {
+    display: none;
+}
+
+.secao.visivel {
+    display: block;
+}
+
+.cartao {
+    background: #fff;
+    border: 1px solid var(--cor-borda);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.grid-cartoes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+}
+
+th, td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid var(--cor-borda);
+    font-size: 0.9rem;
+}
+
+.tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    background: #eef1f7;
+}
+
+.tag.APROVADA { background: #e3f7e9; color: var(--cor-sucesso); }
+.tag.REPROVADA { background: #fbe7e4; color: var(--cor-erro); }
+.tag.PENDENTE { background: #fff6e0; color: #8a6d00; }

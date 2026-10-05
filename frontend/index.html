@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Class Hub — Entrar</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<main class="auth-page">
+    <section class="auth-card">
+        <h1>Class Hub</h1>
+        <p class="subtitulo">Gestão de projetos acadêmicos</p>
+
+        <form id="form-login" class="formulario">
+            <h2>Entrar</h2>
+            <label>Matrícula
+                <input type="text" id="login-matricula" required />
+            </label>
+            <label>Senha
+                <input type="password" id="login-senha" required />
+            </label>
+            <p id="login-erro" class="msg erro"></p>
+            <button type="submit">Entrar</button>
+        </form>
+
+        <hr />
+
+        <form id="form-registro" class="formulario">
+            <h2>Cadastrar aluno</h2>
+            <label>Matrícula
+                <input type="text" id="reg-matricula" required />
+            </label>
+            <label>Nome
+                <input type="text" id="reg-nome" required />
+            </label>
+            <label>E-mail
+                <input type="email" id="reg-email" required />
+            </label>
+            <label>Senha
+                <input type="password" id="reg-senha" required />
+            </label>
+            <p id="registro-msg" class="msg"></p>
+            <button type="submit">Cadastrar</button>
+        </form>
+
+        <p class="dica">Usuários de demonstração: <code>aluno001</code> / <code>prof001</code> / <code>admin001</code>, senha <code>aluno123</code> / <code>prof123</code> / <code>admin123</code>.</p>
+    </section>
+</main>
+<script src="js/api.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>
