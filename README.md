@@ -6,6 +6,8 @@ Entregas Aula 1 - PDF-Diagrama
 
 Entregas Aula 2 - EntregaveisAula2 e Vídeo.
 
+Criamos 3 agentes de IA para fazer o refinamento, padrão da aplicação e implementação desse projeto.
+
 ## Contexto do projeto
 
 - `.ai/` — contexto técnico e de negócio (standards, architecture, tech-stack, business-rules) que orienta qualquer agente de implementação.
