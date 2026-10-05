@@ -3,6 +3,7 @@
 Plataforma web de gestão de projetos acadêmicos (turmas, tarefas, entregas, avaliações, notificações e dashboards).
 
 Entregas Aula 1 - PDF-Diagrama
+
 Entregas Aula 2 - EntregaveisAula2
 
 ## Contexto do projeto
