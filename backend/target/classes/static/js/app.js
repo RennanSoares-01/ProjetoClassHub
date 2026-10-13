@@ -41,15 +41,34 @@ function mostrarSecao(nome) {
 
 mostrarSecao('dashboard');
 
+function renderLoadingState(containerId, mensagem = 'Carregando...') {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '<p>' + escaparHtml(mensagem) + '</p>';
+}
+
+function renderErrorState(containerId, mensagem) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '<p class="msg erro">' + escaparHtml(mensagem) + '</p>';
+}
+
+function renderEmptyState(containerId, mensagem) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '<p>' + escaparHtml(mensagem) + '</p>';
+}
+
 // --- Dashboard ---
 async function carregarDashboard() {
     const container = document.getElementById('dashboard-conteudo');
-    container.innerHTML = '<p>Carregando...</p>';
+    if (!container) return;
+    renderLoadingState('dashboard-conteudo');
     try {
         const dados = await apiFetch('/dashboard/' + usuario.role.toLowerCase());
         container.innerHTML = renderDashboard(usuario.role, dados);
     } catch (erro) {
-        container.innerHTML = '<p class="msg erro">' + erro.message + '</p>';
+        renderErrorState('dashboard-conteudo', erro.message);
     }
 }
 
@@ -92,13 +111,17 @@ let turmasCache = [];
 
 async function carregarTurmas() {
     const lista = document.getElementById('lista-turmas');
-    document.getElementById('form-nova-turma-wrapper').style.display = usuario.role === 'PROFESSOR' ? 'block' : 'none';
-    lista.innerHTML = '<p>Carregando...</p>';
+    const formWrapper = document.getElementById('form-nova-turma-wrapper');
+    if (!lista) return;
+    if (formWrapper) {
+        formWrapper.style.display = usuario.role === 'PROFESSOR' ? 'block' : 'none';
+    }
+    renderLoadingState('lista-turmas');
     try {
         turmasCache = await apiFetch('/turmas');
         lista.innerHTML = turmasCache.map(renderTurma).join('') || '<p>Nenhuma turma encontrada.</p>';
     } catch (erro) {
-        lista.innerHTML = '<p class="msg erro">' + erro.message + '</p>';
+        renderErrorState('lista-turmas', erro.message);
     }
 }
 
@@ -145,17 +168,21 @@ async function matricularAluno(turmaId) {
 
 // --- Tarefas ---
 async function carregarTarefas() {
-    document.getElementById('form-nova-tarefa-wrapper').style.display = usuario.role === 'PROFESSOR' ? 'block' : 'none';
+    const formWrapper = document.getElementById('form-nova-tarefa-wrapper');
+    if (formWrapper) {
+        formWrapper.style.display = usuario.role === 'PROFESSOR' ? 'block' : 'none';
+    }
     if (usuario.role === 'PROFESSOR') {
         await popularSelectTurmas();
     }
     const lista = document.getElementById('lista-tarefas');
-    lista.innerHTML = '<p>Carregando...</p>';
+    if (!lista) return;
+    renderLoadingState('lista-tarefas');
     try {
         const tarefas = await apiFetch('/tarefas');
         lista.innerHTML = tarefas.map(renderTarefa).join('') || '<p>Nenhuma tarefa encontrada.</p>';
     } catch (erro) {
-        lista.innerHTML = '<p class="msg erro">' + erro.message + '</p>';
+        renderErrorState('lista-tarefas', erro.message);
     }
 }
 
@@ -303,28 +330,30 @@ async function avaliarEntrega(evento, entregaId) {
 // --- Notificações ---
 async function carregarNotificacoes() {
     const lista = document.getElementById('lista-notificacoes');
-    lista.innerHTML = '<p>Carregando...</p>';
+    if (!lista) return;
+    renderLoadingState('lista-notificacoes');
     try {
         const notificacoes = await apiFetch('/notificacoes');
-        lista.innerHTML = notificacoes.map((n) => '<div class="cartao"><span class="tag">' + n.tipo + '</span> '
+        lista.innerHTML = notificacoes.map((n) => '<div class="cartao"><span class="tag">' + escaparHtml(n.tipo) + '</span> '
             + '<p>' + escaparHtml(n.mensagem) + '</p>'
             + '<small>' + formatarData(n.criadoEm) + '</small></div>').join('') || '<p>Nenhuma notificação.</p>';
     } catch (erro) {
-        lista.innerHTML = '<p class="msg erro">' + erro.message + '</p>';
+        renderErrorState('lista-notificacoes', erro.message);
     }
 }
 
 // --- Admin: usuários ---
 async function carregarUsuarios() {
     const lista = document.getElementById('lista-usuarios');
-    lista.innerHTML = '<p>Carregando...</p>';
+    if (!lista) return;
+    renderLoadingState('lista-usuarios');
     try {
         const usuarios = await apiFetch('/usuarios');
         lista.innerHTML = '<table><thead><tr><th>Matrícula</th><th>Nome</th><th>E-mail</th><th>Role</th></tr></thead><tbody>'
-            + usuarios.map((u) => '<tr><td>' + u.matricula + '</td><td>' + escaparHtml(u.nome) + '</td><td>' + u.email + '</td><td>' + u.role + '</td></tr>').join('')
+            + usuarios.map((u) => '<tr><td>' + escaparHtml(u.matricula) + '</td><td>' + escaparHtml(u.nome) + '</td><td>' + escaparHtml(u.email) + '</td><td>' + escaparHtml(u.role) + '</td></tr>').join('')
             + '</tbody></table>';
     } catch (erro) {
-        lista.innerHTML = '<p class="msg erro">' + erro.message + '</p>';
+        renderErrorState('lista-usuarios', erro.message);
     }
 }
 
