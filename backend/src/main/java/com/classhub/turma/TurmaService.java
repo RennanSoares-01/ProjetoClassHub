@@ -22,17 +22,20 @@ public class TurmaService {
     private final TurmaRepository turmaRepository;
     private final TurmaMapper turmaMapper;
     private final UsuarioService usuarioService;
+    private final CurrentUser currentUser;
 
-    public TurmaService(TurmaRepository turmaRepository, TurmaMapper turmaMapper, UsuarioService usuarioService) {
+    public TurmaService(TurmaRepository turmaRepository, TurmaMapper turmaMapper, UsuarioService usuarioService,
+                        CurrentUser currentUser) {
         this.turmaRepository = turmaRepository;
         this.turmaMapper = turmaMapper;
         this.usuarioService = usuarioService;
+        this.currentUser = currentUser;
     }
 
     @Transactional
     public TurmaResponse criar(CriarTurmaRequest request) {
-        CurrentUser.exigirRole(Role.PROFESSOR);
-        UsuarioAutenticado atual = CurrentUser.get();
+        currentUser.exigirRole(Role.PROFESSOR);
+        UsuarioAutenticado atual = currentUser.get();
         Usuario professor = usuarioService.buscarEntidade(atual.id());
         Turma turma = new Turma(request.nome(), professor);
         return turmaMapper.toResponse(turmaRepository.save(turma));
@@ -40,7 +43,7 @@ public class TurmaService {
 
     @Transactional(readOnly = true)
     public List<TurmaResponse> listar() {
-        UsuarioAutenticado atual = CurrentUser.get();
+        UsuarioAutenticado atual = currentUser.get();
         List<Turma> turmas = switch (atual.role()) {
             case ADMIN -> turmaRepository.findAll();
             case PROFESSOR -> turmaRepository.findByProfessor_Id(atual.id());
@@ -71,7 +74,7 @@ public class TurmaService {
 
     @Transactional
     public TurmaResponse matricularAluno(Long turmaId, String matricula) {
-        CurrentUser.exigirRole(Role.ADMIN);
+        currentUser.exigirRole(Role.ADMIN);
         Turma turma = buscarEntidade(turmaId);
         Usuario aluno = usuarioService.buscarPorMatricula(matricula);
         if (aluno.getRole() != Role.ALUNO) {
@@ -83,7 +86,7 @@ public class TurmaService {
 
     @Transactional
     public TurmaResponse removerAluno(Long turmaId, String matricula) {
-        CurrentUser.exigirRole(Role.ADMIN);
+        currentUser.exigirRole(Role.ADMIN);
         Turma turma = buscarEntidade(turmaId);
         Usuario aluno = usuarioService.buscarPorMatricula(matricula);
         turma.getAlunos().remove(aluno);
@@ -98,7 +101,7 @@ public class TurmaService {
     /** Valida que o usuário atual pode visualizar a turma (dono, aluno matriculado ou admin). */
     Turma buscarComAcesso(Long id) {
         Turma turma = buscarEntidade(id);
-        UsuarioAutenticado atual = CurrentUser.get();
+        UsuarioAutenticado atual = currentUser.get();
         boolean podeVer = switch (atual.role()) {
             case ADMIN -> true;
             case PROFESSOR -> turma.getProfessor().getId().equals(atual.id());
@@ -111,7 +114,7 @@ public class TurmaService {
     }
 
     private void exigirDonoOuAdmin(Turma turma) {
-        UsuarioAutenticado atual = CurrentUser.get();
+        UsuarioAutenticado atual = currentUser.get();
         boolean autorizado = atual.role() == Role.ADMIN
                 || (atual.role() == Role.PROFESSOR && turma.getProfessor().getId().equals(atual.id()));
         if (!autorizado) {

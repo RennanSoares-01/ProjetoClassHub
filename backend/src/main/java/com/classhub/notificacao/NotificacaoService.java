@@ -19,16 +19,18 @@ public class NotificacaoService {
     private final NotificacaoRepository notificacaoRepository;
     private final NotificacaoMapper notificacaoMapper;
     private final EmailSimuladoService emailSimuladoService;
+    private final CurrentUser currentUser;
 
     public NotificacaoService(NotificacaoRepository notificacaoRepository, NotificacaoMapper notificacaoMapper,
-                               EmailSimuladoService emailSimuladoService) {
+                               EmailSimuladoService emailSimuladoService, CurrentUser currentUser) {
         this.notificacaoRepository = notificacaoRepository;
         this.notificacaoMapper = notificacaoMapper;
         this.emailSimuladoService = emailSimuladoService;
+        this.currentUser = currentUser;
     }
 
     public List<NotificacaoResponse> listarMinhas() {
-        UsuarioAutenticado atual = CurrentUser.get();
+        UsuarioAutenticado atual = currentUser.get();
         return notificacaoRepository.findByDestinatario_IdOrderByCriadoEmDesc(atual.id()).stream()
                 .map(notificacaoMapper::toResponse)
                 .toList();

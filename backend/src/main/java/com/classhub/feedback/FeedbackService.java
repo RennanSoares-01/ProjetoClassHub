@@ -25,20 +25,22 @@ public class FeedbackService {
     private final UsuarioService usuarioService;
     private final NotificacaoService notificacaoService;
     private final FeedbackMapper feedbackMapper;
+    private final CurrentUser currentUser;
 
     public FeedbackService(FeedbackRepository feedbackRepository, EntregaRepository entregaRepository,
                             UsuarioService usuarioService, NotificacaoService notificacaoService,
-                            FeedbackMapper feedbackMapper) {
+                            FeedbackMapper feedbackMapper, CurrentUser currentUser) {
         this.feedbackRepository = feedbackRepository;
         this.entregaRepository = entregaRepository;
         this.usuarioService = usuarioService;
         this.notificacaoService = notificacaoService;
         this.feedbackMapper = feedbackMapper;
+        this.currentUser = currentUser;
     }
 
     @Transactional
     public FeedbackResponse criar(CriarFeedbackRequest request) {
-        CurrentUser.exigirRole(Role.PROFESSOR, Role.ADMIN);
+        currentUser.exigirRole(Role.PROFESSOR, Role.ADMIN);
         if (request.status() == StatusEntrega.PENDENTE) {
             throw new BadRequestException("O status do feedback deve ser APROVADA ou REPROVADA.");
         }
@@ -47,7 +49,7 @@ public class FeedbackService {
                 .orElseThrow(() -> new NotFoundException("Entrega não encontrada."));
         exigirProfessorDonoOuAdmin(entrega);
 
-        UsuarioAutenticado atual = CurrentUser.get();
+        UsuarioAutenticado atual = currentUser.get();
         Usuario professor = usuarioService.buscarEntidade(atual.id());
 
         Feedback feedback = feedbackRepository.findByEntrega_Id(entrega.getId())
@@ -77,7 +79,7 @@ public class FeedbackService {
     }
 
     private void exigirProfessorDonoOuAdmin(Entrega entrega) {
-        UsuarioAutenticado atual = CurrentUser.get();
+        UsuarioAutenticado atual = currentUser.get();
         boolean autorizado = atual.role() == Role.ADMIN
                 || entrega.getTarefa().getTurma().getProfessor().getId().equals(atual.id());
         if (!autorizado) {
@@ -86,7 +88,7 @@ public class FeedbackService {
     }
 
     private void exigirAcessoEntrega(Entrega entrega) {
-        UsuarioAutenticado atual = CurrentUser.get();
+        UsuarioAutenticado atual = currentUser.get();
         boolean podeVer = atual.role() == Role.ADMIN
                 || entrega.getAutor().getId().equals(atual.id())
                 || entrega.getParticipantes().stream().anyMatch(p -> p.getId().equals(atual.id()))
