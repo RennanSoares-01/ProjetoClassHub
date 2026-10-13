@@ -20,13 +20,15 @@ public class UsuarioService {
     private final UsuarioMapper usuarioMapper;
     private final PasswordEncoder passwordEncoder;
     private final TokenStore tokenStore;
+    private final CurrentUser currentUser;
 
     public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper,
-                           PasswordEncoder passwordEncoder, TokenStore tokenStore) {
+                           PasswordEncoder passwordEncoder, TokenStore tokenStore, CurrentUser currentUser) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.passwordEncoder = passwordEncoder;
         this.tokenStore = tokenStore;
+        this.currentUser = currentUser;
     }
 
     @Transactional
@@ -36,7 +38,7 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponse criarUsuarioPrivilegiado(CriarUsuarioRequest request) {
-        CurrentUser.exigirRole(Role.ADMIN);
+        currentUser.exigirRole(Role.ADMIN);
         return usuarioMapper.toResponse(criar(request.matricula(), request.nome(), request.email(), request.senha(), request.role()));
     }
 
@@ -62,13 +64,13 @@ public class UsuarioService {
     }
 
     public List<UsuarioResponse> listar() {
-        CurrentUser.exigirRole(Role.ADMIN);
+        currentUser.exigirRole(Role.ADMIN);
         return usuarioRepository.findAll().stream().map(usuarioMapper::toResponse).toList();
     }
 
     @Transactional
     public UsuarioResponse atualizar(Long id, AtualizarUsuarioRequest request) {
-        CurrentUser.exigirRole(Role.ADMIN);
+        currentUser.exigirRole(Role.ADMIN);
         Usuario usuario = buscarEntidade(id);
         if (request.nome() != null && !request.nome().isBlank()) {
             usuario.setNome(request.nome());

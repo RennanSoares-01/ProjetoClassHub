@@ -29,10 +29,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenStore tokenStore;
     private final ObjectMapper objectMapper;
+    private final CurrentUser currentUser;
 
-    public AuthenticationFilter(TokenStore tokenStore, ObjectMapper objectMapper) {
+    public AuthenticationFilter(TokenStore tokenStore, ObjectMapper objectMapper, CurrentUser currentUser) {
         this.tokenStore = tokenStore;
         this.objectMapper = objectMapper;
+        this.currentUser = currentUser;
     }
 
     @Override
@@ -54,10 +56,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            CurrentUser.set(usuario.get());
+            currentUser.set(usuario.get());
             chain.doFilter(request, response);
         } finally {
-            CurrentUser.clear();
+            currentUser.clear();
         }
     }
 

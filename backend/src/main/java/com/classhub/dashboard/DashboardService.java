@@ -30,21 +30,23 @@ public class DashboardService {
     private final EntregaRepository entregaRepository;
     private final FeedbackRepository feedbackRepository;
     private final UsuarioRepository usuarioRepository;
+    private final CurrentUser currentUser;
 
     public DashboardService(TurmaRepository turmaRepository, TarefaRepository tarefaRepository,
                              EntregaRepository entregaRepository, FeedbackRepository feedbackRepository,
-                             UsuarioRepository usuarioRepository) {
+                             UsuarioRepository usuarioRepository, CurrentUser currentUser) {
         this.turmaRepository = turmaRepository;
         this.tarefaRepository = tarefaRepository;
         this.entregaRepository = entregaRepository;
         this.feedbackRepository = feedbackRepository;
         this.usuarioRepository = usuarioRepository;
+        this.currentUser = currentUser;
     }
 
     @Transactional(readOnly = true)
     public DashboardAlunoResponse aluno() {
-        CurrentUser.exigirRole(Role.ALUNO);
-        UsuarioAutenticado atual = CurrentUser.get();
+        currentUser.exigirRole(Role.ALUNO);
+        UsuarioAutenticado atual = currentUser.get();
 
         List<Turma> turmas = turmaRepository.findByAlunos_Id(atual.id());
         List<Long> turmaIds = turmas.stream().map(Turma::getId).toList();
@@ -85,8 +87,8 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public DashboardProfessorResponse professor() {
-        CurrentUser.exigirRole(Role.PROFESSOR);
-        UsuarioAutenticado atual = CurrentUser.get();
+        currentUser.exigirRole(Role.PROFESSOR);
+        UsuarioAutenticado atual = currentUser.get();
         LocalDateTime agora = LocalDateTime.now();
 
         List<TurmaProfessorResumo> turmas = turmaRepository.findByProfessor_Id(atual.id()).stream()
@@ -102,7 +104,7 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public DashboardAdminResponse admin() {
-        CurrentUser.exigirRole(Role.ADMIN);
+        currentUser.exigirRole(Role.ADMIN);
         return new DashboardAdminResponse(usuarioRepository.count(), turmaRepository.count(), entregaRepository.count());
     }
 

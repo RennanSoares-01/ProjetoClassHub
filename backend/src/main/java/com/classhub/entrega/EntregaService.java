@@ -30,19 +30,21 @@ public class EntregaService {
     private final TarefaRepository tarefaRepository;
     private final UsuarioService usuarioService;
     private final EntregaMapper entregaMapper;
+    private final CurrentUser currentUser;
 
     public EntregaService(EntregaRepository entregaRepository, TarefaRepository tarefaRepository,
-                           UsuarioService usuarioService, EntregaMapper entregaMapper) {
+                           UsuarioService usuarioService, EntregaMapper entregaMapper, CurrentUser currentUser) {
         this.entregaRepository = entregaRepository;
         this.tarefaRepository = tarefaRepository;
         this.usuarioService = usuarioService;
         this.entregaMapper = entregaMapper;
+        this.currentUser = currentUser;
     }
 
     @Transactional
     public EntregaResponse enviar(EnviarEntregaRequest request) {
-        CurrentUser.exigirRole(Role.ALUNO);
-        UsuarioAutenticado atual = CurrentUser.get();
+        currentUser.exigirRole(Role.ALUNO);
+        UsuarioAutenticado atual = currentUser.get();
         Tarefa tarefa = buscarTarefa(request.tarefaId());
         Turma turma = tarefa.getTurma();
 
@@ -68,7 +70,7 @@ public class EntregaService {
     @Transactional
     public EntregaResponse atualizar(Long id, AtualizarEntregaRequest request) {
         Entrega entrega = buscarEntidade(id);
-        UsuarioAutenticado atual = CurrentUser.get();
+        UsuarioAutenticado atual = currentUser.get();
         if (!entrega.getAutor().getId().equals(atual.id())) {
             throw new ForbiddenException("Somente o autor da entrega pode atualizá-la.");
         }
@@ -104,7 +106,7 @@ public class EntregaService {
 
     Entrega buscarComAcesso(Long id) {
         Entrega entrega = buscarEntidade(id);
-        UsuarioAutenticado atual = CurrentUser.get();
+        UsuarioAutenticado atual = currentUser.get();
         boolean podeVer = atual.role() == Role.ADMIN
                 || entrega.getAutor().getId().equals(atual.id())
                 || entrega.getParticipantes().stream().anyMatch(p -> p.getId().equals(atual.id()))
@@ -134,7 +136,7 @@ public class EntregaService {
     }
 
     private void exigirProfessorDonoOuAdmin(Turma turma) {
-        UsuarioAutenticado atual = CurrentUser.get();
+        UsuarioAutenticado atual = currentUser.get();
         boolean autorizado = atual.role() == Role.ADMIN
                 || (atual.role() == Role.PROFESSOR && turma.getProfessor().getId().equals(atual.id()));
         if (!autorizado) {

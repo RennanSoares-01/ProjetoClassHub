@@ -21,16 +21,19 @@ public class TarefaService {
     private final TarefaRepository tarefaRepository;
     private final TurmaRepository turmaRepository;
     private final TarefaMapper tarefaMapper;
+    private final CurrentUser currentUser;
 
-    public TarefaService(TarefaRepository tarefaRepository, TurmaRepository turmaRepository, TarefaMapper tarefaMapper) {
+    public TarefaService(TarefaRepository tarefaRepository, TurmaRepository turmaRepository, TarefaMapper tarefaMapper,
+                         CurrentUser currentUser) {
         this.tarefaRepository = tarefaRepository;
         this.turmaRepository = turmaRepository;
         this.tarefaMapper = tarefaMapper;
+        this.currentUser = currentUser;
     }
 
     @Transactional
     public TarefaResponse criar(CriarTarefaRequest request) {
-        CurrentUser.exigirRole(Role.PROFESSOR);
+        currentUser.exigirRole(Role.PROFESSOR);
         Turma turma = buscarTurma(request.turmaId());
         exigirDonoDaTurma(turma);
         Tarefa tarefa = new Tarefa(turma, request.titulo(), request.descricao(), request.tipo(), request.dataLimite());
@@ -39,7 +42,7 @@ public class TarefaService {
 
     @Transactional(readOnly = true)
     public List<TarefaResponse> listar(Long turmaIdFiltro) {
-        UsuarioAutenticado atual = CurrentUser.get();
+        UsuarioAutenticado atual = currentUser.get();
         List<Tarefa> tarefas = switch (atual.role()) {
             case ADMIN -> turmaIdFiltro != null ? tarefaRepository.findByTurma_Id(turmaIdFiltro) : tarefaRepository.findAll();
             case PROFESSOR -> {
@@ -98,7 +101,7 @@ public class TarefaService {
     /** Valida que o usuário atual pode visualizar a tarefa (aluno matriculado, professor dono ou admin). */
     Tarefa buscarComAcesso(Long id) {
         Tarefa tarefa = buscarEntidade(id);
-        UsuarioAutenticado atual = CurrentUser.get();
+        UsuarioAutenticado atual = currentUser.get();
         Turma turma = tarefa.getTurma();
         boolean podeVer = switch (atual.role()) {
             case ADMIN -> true;
@@ -121,7 +124,7 @@ public class TarefaService {
     }
 
     private void exigirDonoDaTurma(Turma turma) {
-        UsuarioAutenticado atual = CurrentUser.get();
+        UsuarioAutenticado atual = currentUser.get();
         boolean autorizado = atual.role() == Role.ADMIN
                 || (atual.role() == Role.PROFESSOR && turma.getProfessor().getId().equals(atual.id()));
         if (!autorizado) {
