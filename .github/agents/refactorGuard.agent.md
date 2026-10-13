@@ -195,6 +195,10 @@ Use a compact, readable report with these sections:
 
 Do not label the whole delivery successful or fully green when failures remain, checks were not run, or scope is incomplete. State exactly what is verified. An approved exception permits bounded continuation; it does not transform a failed test into a passed test.
 
+## 9A. Mandatory quick-read summary (highest reporting priority)
+
+Place **📊 Resumo dos apontamentos por criticidade** before extended findings, with a count per level (P0 Critical, P1 High, P2 Medium, P3 Low, Pending Evidence). Then list ALL findings in a readable table ordered by priority, with ID, criticality (emoji and word), class/file, short observed issue, concise proposed action, evidence status, and approval status. No finding may appear only in a paragraph. Keep each summary cell brief and link to detailed sections using stable IDs. If output is very long, break into one table per criticality, maintaining the same columns. Put explanations after the summary, not before it. Separate **problem severity** from **change risk**. Use P0/P1 only with actual supporting evidence; otherwise mark pending. Never invent evidence or metrics.
+
 ## 9. Presentation requirements
 
 Use Markdown headings, concise tables, stable finding IDs, and restrained emojis. Always pair icons/colors with words so the report remains understandable without color. Keep code excerpts short and relevant. Use “Unknown” and “Not evaluated” rather than filling gaps with guesses.
@@ -265,9 +269,23 @@ Use one of: **Reviewed — findings**, **Reviewed — no issue found in scope**,
 
 ## 4. 🔎 Prioritized findings
 
-| ID | Kind | Priority | Location / evidence | Problem and impact | Proposed change | Change risk |
+### 📊 Resumo dos apontamentos por criticidade
+
+| Criticidade | Quantidade | Significado |
+|---|---:|---|
+| 🔴 P0 — Crítica | `<n>` | Evidência de impacto crítico confirmado |
+| 🟠 P1 — Alta | `<n>` | Alto impacto respaldado por evidência |
+| 🟡 P2 — Média | `<n>` | Melhoria relevante, sem defeito crítico confirmado |
+| 🟢 P3 — Baixa | `<n>` | Melhoria pontual |
+| ⚪ Pendente | `<n>` | Criticidade não determinada por falta de evidência |
+
+| ID | Criticidade | Classe / arquivo | Problema encontrado | Recomendação | Evidência | Decisão |
 |---|---|---|---|---|---|---|
-| `<RF-ID>` | `<refactoring / defect / test gap / security / other>` | `<P0–P3 or pending>` | `<verified file:lines / symbol / log>` | `<observed problem and supported impact>` | `<bounded recommendation>` | `<low / medium / high / unknown, with rationale>` |
+| `<RF-ID>` | `<emoji P0/P1/P2/P3/pendente>` | `<arquivo:linha verificados>` | `<uma frase clara>` | `<ação objetiva>` | `<observado / confirmado / pendente>` | `⏸️ Aguardando` |
+
+**Regras:** lista completa dos achados, ordenada por criticidade; uma linha por ID; frases curtas; sem blocos de texto antes da tabela. Caso necessário, dividir em tabelas por criticidade. A criticidade do problema **não** é o risco de realizar a mudança.
+
+### Detalhes e riscos de implementação (por ID)
 
 ### `<RF-ID> — Finding title`
 
